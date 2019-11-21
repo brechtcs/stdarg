@@ -1,0 +1,33 @@
+{
+  "name": "stdarg",
+  "version": "1.0.1",
+  "description": "Zero-configuration CLI argument parser",
+  "main": "index.js",
+  "scripts": {
+    "test": "tape test.js && standard"
+  },
+  "devDependencies": {
+    "standard": "^14.3.1",
+    "tape": "^4.9.1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/brechtcs/stdarg.git"
+  },
+  "keywords": [
+    "CLI",
+    "command",
+    "terminal",
+    "process",
+    "arguments",
+    "argv",
+    "parsing",
+    "minimist"
+  ],
+  "author": "Brecht Savelkoul <brecht.savelkoul@gmail.com>",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/brechtcs/stdarg/issues"
+  },
+  "homepage": "https://github.com/brechtcs/stdarg#readme"
+}
