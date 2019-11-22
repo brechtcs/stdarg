@@ -1,7 +1,7 @@
 {
   "name": "stdarg",
   "version": "1.0.1",
-  "description": "Zero-configuration CLI argument parser",
+  "description": "Parse CLI arguments without configuration",
   "main": "index.js",
   "scripts": {
     "test": "tape test.js && standard"

@@ -1,6 +1,6 @@
 # stdarg
 
-Zero-configuration CLI argument parser
+Parse CLI arguments without configuration
 
 ## Usage
 
@@ -14,12 +14,14 @@ console.log(opts)
 // => { _: ['stuff'], r: true, n: '5', this: 'that', force: true}
 ```
 
-## Roadmap
+## Goals
 
-These features are planned, but not supported yet:
+This package aims to be a standardized, zero-configuration replacement for [`minimist`](https://github.com/substack/minimist). As such, the following features are planned, but not supported yet:
 
 - Mapping nested properties to nested objects, e.g. `cmd --nested.option="value"`
 - Grouping recurring flags into array, e.g. `cmd --list="first" --list="second"`
+
+Some divergences from `minimist`'s default behaviour however are intentional. For example, `stdarg` makes no attempt to coerce strings to numbers. It is up to the program to decide when this is necessary and when it isn't. Also, arguments will always be evaluated as if using `minimist`'s [boolean option](https://github.com/substack/minimist#var-argv--parseargsargs-opts).
 
 ## License
 
