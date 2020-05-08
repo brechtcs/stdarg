@@ -1,49 +1,58 @@
-var parse = require('./')
+var { list, number } = require('stdopt')
+var Args = require('./arg')
 var test = require('tape')
 
-test('shorthand', t => {
-  var opts = parse([
-    '/usr/bin/node',
-    '/var/example.js',
-    '-abc', 'nope',
-    '-p', '8080'
-  ])
+test('parse', function (t) {
+  var args = new Args()
+  args.use(['port', 'p'], '...', number)
+  args.use(['log', 'l'], '...')
 
-  t.equal(opts.a, true)
-  t.equal(opts.b, true)
-  t.equal(opts.c, 'nope')
-  t.equal(opts.p, '8080')
-  t.end()
-})
+  var argv = ['--port', '80', '-l']
+  var opts = args.parse(argv)
+  t.deepEqual(argv, [])
+  t.deepEqual(opts, {
+    log: true,
+    port: 80
+  })
 
-test('longhand', t => {
-  var opts = parse([
-    '/usr/bin/node',
-    '/var/example.js',
-    '--yep', '--some', 'stuff',
-    '--no-stuff', 'nope'
-  ])
+  argv = ['some', '-p', '80', 'more', '--log', 'stuff']
+  opts = args.parse(argv)
+  t.deepEqual(argv, ['some', 'more', 'stuff'])
+  t.deepEqual(opts, {
+    log: true,
+    port: 80
+  })
 
-  t.equal(opts.yep, true)
-  t.equal(opts.stuff, false)
-  t.equal(opts._.length, 2)
-  t.ok(opts._.includes('stuff'))
-  t.ok(opts._.includes('nope'))
-  t.end()
-})
+  argv = ['--port=80', '5000']
+  opts = args.parse(argv)
+  t.deepEqual(argv, ['5000'])
+  t.deepEqual(opts, {
+    port: 80
+  })
 
-test('key-value', t => {
-  var opts = parse([
-    '/usr/bin/node',
-    '/var/example.js',
-    '--some-other-flag',
-    '--stuff=arf barf',
-    'blah'
-  ])
+  argv = ['-lp', '80']
+  opts = args.parse(argv)
+  t.deepEqual(argv, [])
+  t.deepEqual(opts, {
+    log: true,
+    port: 80
+  })
 
-  t.equal(opts['some-other-flag'], true)
-  t.equal(opts['stuff'], 'arf barf')
-  t.equal(opts._.length, 1)
-  t.ok(opts._.includes('blah'))
+  argv = ['-pl', '80']
+  opts = args.parse(argv)
+  t.deepEqual(argv, ['80'])
+  t.deepEqual(opts, {
+    log: true,
+    port: true
+  })
+
+  args.use(['numbers', 'number', 'n'], '...', list.of(number))
+  argv = ['-n', '20', '--number', '36', '-n', '7']
+  opts = args.parse(argv)
+  t.deepEqual(argv, [])
+  t.deepEqual(opts, {
+    numbers: [20, 36, 7]
+  })
+
   t.end()
 })
