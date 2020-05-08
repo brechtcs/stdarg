@@ -1,5 +1,5 @@
 var { list, number } = require('stdopt')
-var Args = require('./arg')
+var Args = require('./')
 var test = require('tape')
 
 test('parse', function (t) {
