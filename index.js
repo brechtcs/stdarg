@@ -70,6 +70,29 @@ class Args {
 
     return res
   }
+
+  help ({ spaces } = {}) {
+    var sep = spaces ? ''.padEnd(spaces, ' ') : '\t'
+    var opts = Array.from(this.descriptions.entries())
+    var lines = opts.map(opt => {
+      var descr = opt[1]
+      var flags = opt[0].map(flag => {
+        if (flag.length > 1) return '--' + flag
+        else return '-' + flag
+      }).join(', ')
+
+      return { flags, descr }
+    })
+
+    var longest = lines.reduce((length, { flags }) => {
+      return flags.length > length ? flags.length : length
+    }, 0)
+
+    return lines.map(({ flags, descr }) => {
+      var col = flags.padEnd(longest, ' ')
+      return col + sep + descr
+    })
+  }
 }
 
 module.exports = Args

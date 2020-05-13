@@ -56,3 +56,27 @@ test('parse', function (t) {
 
   t.end()
 })
+
+test('help', t => {
+  var args = new Args()
+  args.use(['first', 'f'], 'First option')
+  args.use(['second', 's'], 'Second option')
+  args.use('third', 'Third option')
+  args.use('4', 'Fourth option')
+
+  t.deepEqual(args.help(), [
+    '--first, -f \tFirst option',
+    '--second, -s\tSecond option',
+    '--third     \tThird option',
+    '-4          \tFourth option'
+  ])
+
+  t.deepEqual(args.help({ spaces: 2 }), [
+    '--first, -f   First option',
+    '--second, -s  Second option',
+    '--third       Third option',
+    '-4            Fourth option'
+  ])
+
+  t.end()
+})
