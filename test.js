@@ -38,14 +38,6 @@ test('parse', function (t) {
     port: 80
   })
 
-  argv = ['-pl', '80']
-  opts = args.parse(argv)
-  t.deepEqual(argv, ['80'])
-  t.deepEqual(opts, {
-    log: true,
-    port: true
-  })
-
   args.use(['numbers', 'number', 'n'], '...', list.of(number))
   argv = ['-n', '20', '--number', '36', '-n', '7']
   opts = args.parse(argv)
@@ -53,6 +45,15 @@ test('parse', function (t) {
   t.deepEqual(opts, {
     numbers: [20, 36, 7]
   })
+
+  argv = ['--number', 'stuff']
+  t.throws(() => args.parse(argv), /stuff is an invalid value for --number/)
+
+  argv = ['--port', 'True']
+  t.throws(() => args.parse(argv), /True is an invalid value for --port/)
+
+  argv = ['-pl', '80']
+  t.throws(() => args.parse(argv), /undefined is an invalid value for -p/)
 
   t.end()
 })
