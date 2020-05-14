@@ -23,6 +23,11 @@ test('basic', function (t) {
     port: 80
   })
 
+  argv = ['--some', '--unknown', '-xyz']
+  opts = args.parse(argv)
+  t.deepEqual(argv, ['--some', '--unknown', '-xyz'])
+  t.deepEqual(opts, {})
+
   argv = ['--port=80', '5000']
   opts = args.parse(argv)
   t.deepEqual(argv, ['5000'])

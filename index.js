@@ -35,9 +35,9 @@ class Args {
   }
 
   parse (argv) {
-    var hoisted, res, pattern, match
-    hoisted = []
-    res = {}
+    var used = []
+    var res = {}
+    var pattern, match
 
     argv.forEach((arg, i) => {
       for (pattern of this.patterns.keys()) {
@@ -48,7 +48,7 @@ class Args {
         var hoist = (short && !match[2]) || (!short && !match[1])
         var target = hoist ? argv[i + 1] : match[1]
         var value = new type(target).map(casted => {
-          if (hoist) hoisted.push(target)
+          if (hoist) used.push(target)
           return casted
         }).catch(BooleanError, () => {
           return true
@@ -62,15 +62,15 @@ class Args {
           res[key] = value
         }
 
+        used.push(arg)
+
         if (arg.startsWith('--')) {
           break
         }
       }
     })
 
-    purge(argv, arg => {
-      return arg.startsWith('-') || hoisted.includes(arg)
-    })
+    purge(argv, used)
 
     return res
   }
