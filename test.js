@@ -1,8 +1,8 @@
 var { list, number } = require('stdopt')
-var Args = require('./')
+var { Args, StringArgument } = require('./')
 var test = require('tape')
 
-test('parse', function (t) {
+test('basic', function (t) {
   var args = new Args()
   args.use(['port', 'p'], '...', number)
   args.use(['log', 'l'], '...')
@@ -54,6 +54,34 @@ test('parse', function (t) {
 
   argv = ['-pl', '80']
   t.throws(() => args.parse(argv), /undefined is an invalid value for -p/)
+
+  t.end()
+})
+
+test('strings', t => {
+  var args = new Args()
+  args.use(['message', 'm'], 'Message to display', StringArgument)
+
+  var argv = ['dit', '--message', 'dat']
+  var opts = args.parse(argv)
+  t.deepEqual(argv, ['dit'])
+  t.deepEqual(opts, { message: 'dat' })
+
+  argv = ['--message=deze']
+  opts = args.parse(argv)
+  t.deepEqual(argv, [])
+  t.deepEqual(opts, { message: 'deze' })
+
+  argv = ['-azm', 'alles']
+  opts = args.parse(argv)
+  t.deepEqual(argv, [])
+  t.deepEqual(opts, { message: 'alles' })
+
+  argv = ['-mz', 'niks']
+  t.throws(() => args.parse(argv), /undefined is an invalid value for -m/)
+
+  argv = ['--message', '-xyz']
+  t.throws(() => args.parse(argv), /-xyz is an invalid value for --message/)
 
   t.end()
 })

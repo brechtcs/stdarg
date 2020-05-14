@@ -1,4 +1,6 @@
-var { boolean, list, string } = require('stdopt')
+var { BooleanArgument, BooleanError } = require('./boolean')
+var { StringArgument } = require('./string')
+var { list, string } = require('stdopt')
 var purge = require('purge')
 
 class Args {
@@ -7,7 +9,7 @@ class Args {
     this.patterns = new Map()
   }
 
-  use (name, descr, type) {
+  use (name, descr, type = BooleanArgument) {
     var aliases, description, key, alias, pattern, flag, short
     aliases = list(name, string).catch('Invalid `stdarg` argument name').value()
     description = string(descr).catch('Invalid `stdarg` argument description').value()
@@ -37,15 +39,6 @@ class Args {
     hoisted = []
     res = {}
 
-    function cast (value, flag, type, hoist) {
-      return type(value).map(casted => {
-        if (hoist) hoisted.push(value)
-        return casted
-      }).catch(() => {
-        return new Error(`${value} is an invalid value for ${flag}`)
-      }).value()
-    }
-
     argv.forEach((arg, i) => {
       for (pattern of this.patterns.keys()) {
         match = arg.match(pattern)
@@ -54,7 +47,14 @@ class Args {
         var { key, flag, short, type } = this.patterns.get(pattern)
         var hoist = (short && !match[2]) || (!short && !match[1])
         var target = hoist ? argv[i + 1] : match[1]
-        var value = type ? cast(target, flag, type, hoist) : true
+        var value = new type(target).map(casted => {
+          if (hoist) hoisted.push(target)
+          return casted
+        }).catch(BooleanError, () => {
+          return true
+        }).catch(() => {
+          return new Error(`${target} is an invalid value for ${flag}`)
+        }).value()
 
         if (Array.isArray(res[key])) {
           res[key] = res[key].concat(value)
@@ -100,3 +100,6 @@ class Args {
 }
 
 module.exports = Args
+module.exports.Args = Args
+module.exports.BooleanArgument = BooleanArgument
+module.exports.StringArgument = StringArgument
