@@ -1,27 +1,75 @@
 # stdarg
 
-Parse CLI arguments without configuration
+Parse and validate CLI arguments
 
 ## Usage
 
+A basic command looks like this:
+
 ```js
-var stdarg = require('stdarg')
-var opts = stdarg(process.argv)
+// cmd.js
 
-console.log(opts)
+var Args = require('stdarg')
+var number = require('stdopt/builtin/number')
+var string = require('stdarg/string')
 
-// $ node example.js -rn 5 --this="that" --force stuff
-// => { _: ['stuff'], r: true, n: '5', this: 'that', force: true}
+var command = new Args()
+command.use(['port', 'p'], 'Server port', number)
+command.use(['message', '-m'], 'Welcome message', string)
+command.use(['log', 'l'], 'Toggle logging')
+
+var argv = process.argv.slice(2)
+var opts = command.parse(argv)
+console.log('Parsed options: ' + JSON.stringify(opts))
+console.log('Remaining argv: ' + argv.join(', '))
 ```
 
-## Goals
+You can invoke it like so:
 
-This package aims to be a standardized, zero-configuration replacement for [`minimist`](https://github.com/substack/minimist). As such, the following features are planned, but not supported yet:
+```
+$ node cmd.js argument --message "Hello, world" some more
+Parsed options: {"message": "Hello, world"}
+Remaining argv: argument, some, more
 
-- Mapping nested properties to nested objects, e.g. `cmd --nested.option="value"`
-- Grouping recurring flags into array, e.g. `cmd --list="first" --list="second"`
+$ node cmd.js --port 80 --log some more arguments
+Parsed options: {"port": 80, "log": true}
+Remaining argv: some, more, arguments
 
-Some divergences from `minimist`'s default behaviour however are intentional. For example, `stdarg` makes no attempt to coerce strings to numbers. It is up to the program to decide when this is necessary and when it isn't. Also, arguments will always be evaluated as if using `minimist`'s [boolean option](https://github.com/substack/minimist#var-argv--parseargsargs-opts).
+$ node cmd.js -lp 80 some more arguments
+Parsed options: {"port": 80, "log": true}
+Remaining argv: some, more, arguments
+
+$ node cmd.js --port stuff
+Error: stuff is an invalid value for --port
+
+$ node cmd.js --message
+Error: undefined is an invalid value for --message
+```
+
+### Help
+
+You can also generate `help` output based on the configured options. Given the command above, you can add this as follows:
+
+```js
+args.use(['help', 'h'], 'Get help')
+
+var argv = process argv.slice(2)
+var opts = args.parse(argv)
+
+if (opts.help) {
+  args.help().forEach(line => console.log(line))
+}
+```
+
+Invoking this gives the following output:
+
+```
+$ node cmd.js --help
+--port, -p     Server port
+--message, -m  Welcome message
+--log, -l      Toggle logging
+--help, -h     Get help
+```
 
 ## License
 
