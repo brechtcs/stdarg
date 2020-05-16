@@ -47,7 +47,7 @@ class Args {
         var { key, flag, short, type } = this.patterns.get(pattern)
         var hoist = (short && !match[2]) || (!short && !match[1])
         var target = hoist ? argv[i + 1] : match[1]
-        var value = new type(target).map(casted => {
+        var value = new type(target).map(casted => { // eslint-disable-line
           if (hoist) used.push(target)
           return casted
         }).catch(BooleanError, () => {
