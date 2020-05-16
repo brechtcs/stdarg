@@ -1,9 +1,10 @@
 {
   "name": "stdarg",
-  "version": "1.0.1",
-  "description": "Parse CLI arguments without configuration",
+  "version": "2.0.0",
+  "description": "Parse and validate CLI arguments",
   "main": "index.js",
   "scripts": {
+    "prepare": "npm test",
     "test": "tape test.js && standard"
   },
   "dependencies": {
@@ -25,8 +26,8 @@
     "process",
     "arguments",
     "argv",
-    "parsing",
-    "minimist"
+    "parse",
+    "validate"
   ],
   "author": "Brecht Savelkoul <brecht.savelkoul@gmail.com>",
   "license": "Apache-2.0",
